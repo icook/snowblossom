@@ -4,7 +4,7 @@
 
 #*** first stage is for building
 
-FROM ubuntu:18.10 as builder
+FROM ubuntu:18.04 as builder
 
 RUN apt-get update
 RUN apt-get install --yes wget gpg
@@ -31,9 +31,9 @@ RUN bazel build :SnowBlossomMiner_deploy.jar \
 
 #*** second stage is for running
 
-FROM ubuntu:18.10
+FROM ubuntu:18.04
 
-EXPOSE 2338
+EXPOSE 4000
 
 RUN apt-get update && \
   apt-get install --no-install-recommends --yes openjdk-8-jre-headless && \
@@ -63,6 +63,7 @@ RUN echo '#!/bin/bash\njava -jar SnowBlossomNode_deploy.jar configs/node.conf "$
   echo '#!/bin/bash\njava -Xmx10g -jar Arktika_deploy.jar "$@"' > arktika-small.sh && \
   echo '#!/bin/bash\njava -Xmx10g -jar ShackletonExplorer_deploy.jar configs/explorer.conf "$@"' > shackleton-explorer.sh && \
   chmod +x *.sh && \
+  echo "env_override_prefix=snowblossom_" > empty_config.conf && \
   mkdir -p "logs"
 
 CMD ./node.sh
